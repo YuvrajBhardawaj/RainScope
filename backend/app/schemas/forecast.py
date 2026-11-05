@@ -32,6 +32,7 @@ class ForecastResponse(BaseModel):
     model: str
     source: str
     mode: str
+    runTime: str
     unit: str = "mm"
     interval: str
     forecast: list[ForecastPoint]

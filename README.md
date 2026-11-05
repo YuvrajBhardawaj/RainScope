@@ -18,8 +18,10 @@ backend/app/
 frontend/src/app/
   core/models/   typed forecast and location contracts
   core/services/ HTTP API and BehaviorSubject state
-  features/dashboard/pages/      routed dashboard page
-  features/dashboard/components/  search, summary, chart, insights, map
+  features/dashboard/pages/      routed overview page
+  features/dashboard/components/  location search, summary, chart, insights, map
+  features/map/pages/            dedicated precipitation map
+  features/about/pages/          project and data notes
   shared/pipes/  reusable forecast display helpers
 ```
 
@@ -29,10 +31,11 @@ Request direction is `route → controller → service → repository`; the repo
 
 1. The dashboard page coordinates location/model selection and presents the state stream.
 2. `ForecastStateService` owns `BehaviorSubject`s for selected location, model, and refresh events. Its observable state switches to the newest API request and publishes loading, forecast, or error state.
-3. `ForecastApiService` sends the forecast and map-grid requests to FastAPI.
-4. The route validates query parameters, the controller handles provider failures, and `ForecastService` applies a 30-minute cache and computes interval labels and summary values.
-5. `EcmwfOpenDataRepository` retrieves the `tp` parameter, decodes GRIB2 through cfgrib/ecCodes, samples the nearest grid cell, converts accumulated precipitation to interval rainfall, and tries recent forecast cycles when the newest run is not available.
-6. Reusable Angular components render the returned forecast; the map shows spatial grid cells, and CSV export uses the same forecast response.
+3. The location-search component debounces keystrokes and calls `/api/locations/search`; the backend geocoding repository queries Open-Meteo and returns ranked city, region, and country matches. Select a result to update the shared location subject.
+4. `ForecastApiService` sends forecast and map-grid requests to FastAPI.
+5. The route validates query parameters, the controller handles provider failures, and `ForecastService` applies a 30-minute cache and computes interval labels and summary values.
+6. `EcmwfOpenDataRepository` retrieves the `tp` parameter, decodes GRIB2 through cfgrib/ecCodes, samples the nearest grid cell, converts accumulated precipitation to interval rainfall, and tries recent forecast cycles when the newest run is not available.
+7. Reusable Angular components render the returned forecast; the map shows spatial grid cells, and CSV export uses the same forecast response.
 
 ## Run locally
 
@@ -60,8 +63,10 @@ Open `http://localhost:4200`. Swagger docs are at `http://localhost:8000/docs`. 
 
 ## Enable ECMWF Open Data
 
-The default provider is the clearly labeled demo adapter. Set `FORECAST_PROVIDER=ecmwf` in the backend environment to use the real repository. Install the Python packages from `backend/requirements.txt`; GRIB decoding needs ecCodes and cfgrib. If the selected live cycle is not available, the API reports a provider error instead of silently substituting sample rainfall.
+The default provider is ECMWF Open Data. Install the Python packages from `backend/requirements.txt`; GRIB decoding needs ecCodes and cfgrib. To opt into clearly labeled sample values for UI work, set `FORECAST_PROVIDER=demo`. If the selected live cycle is not available, the API reports a provider error instead of silently substituting sample rainfall. The service caches a location/model response for 30 minutes.
+
+Live forecasts can still look unchanged between model runs: ECMWF publishes four IFS operational cycles each day (00/06/12/18 UTC), and refresh serves the latest available cycle rather than creating a new forecast.
 
 The repository uses `ifs` for the ECMWF IFS model and `aifs-single` for deterministic AIFS. ECMWF currently documents IFS operational runs at 00/06/12/18 UTC with 3-hour steps for the near range; AIFS Single uses 6-hour steps. See [ECMWF Open Data forecast catalogue](https://confluence.ecmwf.int/spaces/DAC/pages/272310539/ECMWF+open+data+real-time+forecasts+from+IFS+and+AIFS) and [AIFS data details](https://confluence.ecmwf.int/spaces/DAC/pages/738041086/ECMWF+open+data+AIFS+machine-learning+data).
 
-City search is currently a small local list; geocoding, deployment configuration, and a live ECMWF raster grid are follow-up work. Risk bands are illustrative application thresholds, not official warnings or flood predictions.
+City search uses Open-Meteo Geocoding, which resolves names and postcodes to coordinates. Its location records are based on GeoNames, and the UI shows attribution with results. See the [geocoding API documentation](https://open-meteo.com/en/docs/geocoding-api). The nearby map grid is still illustrative demo data; a decoded, live ECMWF raster grid is follow-up work. Risk bands are illustrative application thresholds, not official warnings or flood predictions.
