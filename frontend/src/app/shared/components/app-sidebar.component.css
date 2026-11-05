@@ -1,0 +1,20 @@
+:host{position:sticky;top:0;align-self:flex-start;display:block;flex:0 0 auto;width:224px;height:100vh;height:100dvh;z-index:20}
+:host .rail{width:100%;height:100%;min-height:0;padding:24px 13px 16px;display:flex;align-items:stretch;flex-direction:column;overflow-y:auto;background:#10251f;color:#91a99d;box-sizing:border-box}
+:host .brand-mark{display:flex;align-items:center;gap:11px;margin:0 8px 42px;color:#f5f8f4;text-decoration:none}
+.brand-glyph{font:30px/1 Georgia,serif;color:#fff}.brand-glyph>span{color:#8dd1a2}
+.brand-copy{font:600 17px/1.1 Georgia,serif;letter-spacing:-.35px}.brand-copy small{display:block;margin-top:5px;color:#829a8c;font:600 7px/1.2 'Segoe UI',sans-serif;letter-spacing:1.2px;white-space:nowrap}
+.nav-caption{padding:0 12px 10px;color:#789184;font-size:8px;font-weight:700;letter-spacing:1.4px}
+:host .rail-nav{display:flex;flex-direction:column;gap:5px}
+:host .rail-icon{position:relative;display:flex;align-items:center;gap:12px;width:100%;height:44px;margin:0;padding:0 12px;border-radius:8px;color:#a5b8ad;text-decoration:none;font-size:12px;transition:background .16s ease,color .16s ease}
+:host .rail-icon:hover{background:#1b392d;color:#eff6ef}
+:host .rail-icon.active{background:#254638;color:#d8efda;box-shadow:inset 2px 0 #8bd09b}
+.nav-symbol{display:grid;place-items:center;width:20px;height:20px;flex:0 0 20px;font-size:17px;color:#91aa99}
+.rail-icon.active .nav-symbol{color:#a6d8ad}
+.nav-label{font-weight:500;white-space:nowrap}
+.nav-chevron{margin-left:auto;color:#789184;font-size:16px;opacity:0;transform:translateX(-3px);transition:all .16s ease}
+.rail-icon:hover .nav-chevron,.rail-icon.active .nav-chevron{opacity:.8;transform:none}
+.sidebar-bottom{display:flex;align-items:center;gap:9px;margin-top:auto;padding:14px 8px 2px;border-top:1px solid #254136;color:#82988b;font-size:9px}
+.sidebar-signal{width:7px;height:7px;border-radius:50%;background:#69b77f;box-shadow:0 0 0 3px #244333}
+@media(max-width:900px){:host{width:68px}:host .rail{padding:22px 10px 14px;align-items:center}:host .brand-mark{margin:0 0 37px}.brand-copy,.nav-caption,.nav-label,.nav-chevron,.sidebar-bottom{display:none}:host .rail-nav{width:100%;align-items:center}:host .rail-icon{justify-content:center;width:44px;padding:0}.nav-symbol{font-size:19px}}
+@media(max-width:620px){:host{width:54px}:host .rail{padding:16px 6px 12px}:host .brand-mark{margin-bottom:30px}.brand-glyph{font-size:25px}:host .rail-icon{width:40px;height:42px}}
+@media(prefers-reduced-motion:reduce){:host .rail-icon,:host .nav-chevron{transition:none}}

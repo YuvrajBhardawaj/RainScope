@@ -1,0 +1,17 @@
+<main class="shell" *ngIf="state$ | async as vm">
+  <app-sidebar></app-sidebar>
+  <section class="workspace">
+    <header class="topbar"><div class="brand">Rain<span>scope</span><small>PRECIPITATION INTELLIGENCE</small></div><div class="top-right"><span class="status-dot" [class.offline]="!!vm.error"></span><span>{{vm.error ? 'Forecast API unavailable' : vm.forecast?.mode === 'live' ? 'ECMWF Open Data' : vm.forecast?.mode === 'demo' ? 'Illustrative sample data' : 'Loading forecast'}}</span><button class="avatar">Y</button></div></header>
+    <section class="intro"><div><div class="eyebrow">WEATHER MONITORING <span> / </span> INDIA</div><h1>Rainfall, <em>in focus.</em></h1><p>Understand what’s coming, down to your location.</p></div></section>
+    <app-location-search [model]="(model$ | async) ?? 'ifs'" (locationChange)="selectLocation($event)" (modelChange)="selectModel($event)" (refresh)="refresh()" (exportCsv)="exportCsv(vm.forecast)"></app-location-search>
+    <div *ngIf="vm.error" class="notice">{{vm.error}}</div>
+    <div *ngIf="vm.loading" class="loading-state"><span></span> Loading precipitation forecast…</div>
+    <ng-container *ngIf="vm.forecast as forecast">
+      <section class="location-row"><div><span class="location-icon">⌖</span><div><h2>{{forecast.location.name}}<span class="country">, {{forecast.location.region}}</span></h2><p>{{forecast.location.latitude | number:'1.3-3'}}° N <span>·</span> {{forecast.location.longitude | number:'1.3-3'}}° E <span>·</span><span class="run-label" *ngIf="forecast.mode === 'live'"><i>●</i> ECMWF run {{forecast.runTime | date:'dd MMM, HH:mm':'UTC'}} UTC</span><span class="run-label" *ngIf="forecast.mode === 'demo'">Illustrative sample · not live</span></p></div></div><span class="live-badge"><span></span> {{forecast.mode === 'demo' ? 'DEMO DATA' : 'LIVE ECMWF DATA'}}</span></section>
+      <app-forecast-summary [forecast]="forecast"></app-forecast-summary>
+      <section class="content-grid"><app-rainfall-chart [forecast]="forecast"></app-rainfall-chart><app-forecast-insights [forecast]="forecast"></app-forecast-insights></section>
+      <app-precipitation-map *ngIf="location$ | async as location" [location]="location" [model]="(model$ | async) ?? 'ifs'"></app-precipitation-map>
+      <footer><span>RainScope <b>·</b> {{forecast.model}} model <b>·</b> {{forecast.interval}}</span><span>Rainfall thresholds are indicative and are not official weather warnings.</span></footer>
+    </ng-container>
+  </section>
+</main>
